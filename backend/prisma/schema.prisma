@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Student {
+  id              String        @id @default(cuid())
+  admissionNumber String        @unique
+  name            String
+  course          String
+  year            Int
+  dateOfBirth     DateTime
+  email           String        @unique
+  mobileNumber    String
+  gender          Gender
+  address         String
+  photoUrl        String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  activityLogs    ActivityLog[]
+
+  @@index([admissionNumber])
+  @@index([name])
+  @@index([email])
+  @@index([course])
+  @@map("students")
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  studentId String
+  action    String
+  createdAt DateTime @default(now())
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+  @@map("activity_logs")
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
